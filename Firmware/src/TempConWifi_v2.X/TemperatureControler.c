@@ -797,7 +797,7 @@ void TemperatureController_ProcessLoop() {
 
     if (debugTemperatureController) Log("TICK, %ul, %f3, %f3", globalstate.SystemTime, smoothedTargetTemperature, smoothedProcessTemperature);
 
-    if (smoothedTargetTemperature < -250 || smoothedProcessTemperature <-250 || smoothedProcessTemperature > 1250 || smoothedTargetTemperature > 1250) {
+    if (smoothedTargetTemperature < -25 || smoothedProcessTemperature <-25 || smoothedProcessTemperature > 125 || smoothedTargetTemperature > 125) {
         if (debugTemperatureController) Log(", INVALID_TEMP\r\n");
         return;
     }

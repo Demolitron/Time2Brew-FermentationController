@@ -4,7 +4,19 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="css" href="app.css">
-    <link rel="stylesheet" type="css" href="../external.css">
+    <link rel="stylesheet" type="css" href="../external.css">    
+    <script src="../appJS/configureApp.js"></script>
+    <script src="../appJS/utils.js"></script>
+    <script src="../appJS/promisify.js "></script>
+    <script src="../appJS/temperatureProfileAPI.js"></script>
+    <script src="../externJS/rx.all.min.js"></script>
+    <script src="../externJS/mustache.min.js"></script>
+    <script src="../externJS/jquery.min.js"></script>
+    <script src="../externJS/bootstrap.min.js"></script>
+    <script src="../externJS/jquery.flot.min.js"></script>
+    <script src="../externJS/jquery.flot.time.min.js"></script>
+    <script src="../externJS/jquery.flot.resize.min.js"></script>
+    <script src="../externJS/jquery.flot.navigate.min.js"></script>
 </head>
 
 <body>
@@ -40,16 +52,7 @@
     </div>
 
 
-    <script src="../appJS/configureApp.js"></script>
-    <script src="../appJS/utils.js"></script>
-    <script src="../appJS/promisify.js "></script>
-    <script src="../appJS/temperatureProfileAPI.js"></script>
-    <script src="../externJS/rx.all.min.js"></script>
-    <script src="../externJS/mustache.min.js"></script>
-    <script src="../externJS/jquery.min.js"></script>
-    <script src="../externJS/bootstrap.min.js"></script>	
-    <script src="../externJS/jquery.flot.min.js"></script>
-    <script src="../externJS/jquery.flot.time.min.js"></script>  
+
 
     <script id="profilePanelTemplate" type="x-tmpl-mustache">
         <div class="panel-heading" role="tab">
@@ -104,9 +107,12 @@
                 <h4>
         </div>
         <div id="{{collapseId}}" class="panel-collapse collapse">
+
             <div class="panel-body">
                 <ol id="{{stepListId}}"></ol>
-                <div id="{{chartId}}" style="width: 100%; height: 200px"></div>
+                
+                    <div id="{{chartId}}" style="width: 100%; height: 400px"></div>
+                
             </div>
         </div>
     </script>
@@ -276,8 +282,11 @@
             var collapseId = 'collapse' + instanceId;
             var stepListId = 'steps' + instanceId;
             var chartId = 'chart' + instanceId;
+            var resizingChartId = 'resizingChart' + instanceId;
             var listItem = document.createElement('li');
             var instancePanel = document.createElement('div');
+            var MinTemp = 300;
+            var MaxTemp = -100;
             instancePanel.setAttribute('class', 'panel panel-default');
 
             var htmlTemplate = document.getElementById('instanceDataPanelTemplate').innerHTML;
@@ -287,13 +296,15 @@
                 collapseId: collapseId,
                 stepListId: stepListId,
                 chartId: chartId,
-                date: date
+                date: date,
+                resizingChartId: resizingChartId
             });
             listItem.appendChild(instancePanel);
             parent.appendChild(listItem);
 
             $("#" + collapseId).on('shown.bs.collapse', function () {
                 var chartPanel = $("#" + chartId);
+                var resizingChartPanel = $("." + resizingChartId);
                 if (chartPanel.children().length == 0) {
                     var instanceSteps = temperatureProfileAPI.getInstanceSteps(profileId, instanceId);
                     var trendData = temperatureProfileAPI.getTrendData(profileId, instanceId);
@@ -310,19 +321,25 @@
 
                           var probe0Data = [];
                           var probe1Data = [];
-                          var setpointData = [];						 
+                          var setpointData = [];
                           for (var j = 0; j < instanceData.trendData.length; j += 1) {
-                              var timeStamp = (instanceId + (instanceData.trendData[j].SampleIdx * 60)) * 1000;						
+                              var timeStamp = (instanceId + (instanceData.trendData[j].SampleIdx * 60)) * 1000;
                               if (instanceData.trendData[j].probe0Temp > 0) {
                                   probe0Data.push([timeStamp, instanceData.trendData[j].probe0Temp]);
+                                  if (instanceData.trendData[j].probe0Temp > MaxTemp) MaxTemp = instanceData.trendData[j].probe0Temp;
+                                  if (instanceData.trendData[j].probe0Temp < MinTemp) MinTemp = instanceData.trendData[j].probe0Temp;
+
                               }
                               if (instanceData.trendData[j].probe1Temp > 0) {
                                   probe1Data.push([timeStamp, instanceData.trendData[j].probe1Temp]);
+                                  if (instanceData.trendData[j].probe1Temp > MaxTemp) MaxTemp = instanceData.trendData[j].probe1Temp;
+                                  if (instanceData.trendData[j].probe1Temp < MinTemp) MinTemp = instanceData.trendData[j].probe1Temp;
                               }
                           }
 
                           var startTime = instanceId;
                           var endTime = startTime;
+                          var totalDuration = 0;
                           for (var i = 0; i < instanceData.stepData.length; i++) {
                               endTime += instanceData.stepData[i].duration;
 
@@ -331,12 +348,25 @@
 
                               setpointData.push([msStart, instanceData.stepData[i].startTemp]);
                               setpointData.push([msEnd, instanceData.stepData[i].endTemp]);
+
+                              if (instanceData.stepData[i].startTemp > MaxTemp) MaxTemp = instanceData.stepData[i].startTemp;
+                              if (instanceData.stepData[i].startTemp < MinTemp) MinTemp = instanceData.stepData[i].startTemp;
+
+                              if (instanceData.stepData[i].endTemp > MaxTemp) MaxTemp = instanceData.stepData[i].endTemp;
+                              if (instanceData.stepData[i].endTemp < MinTemp) MinTemp = instanceData.stepData[i].endTemp;
+
                               startTime += instanceData.stepData[i].duration;
                           }
 
                           var options = {
                               xaxis: {
-                                  mode: "time"
+                                  mode: "time",
+                                  zoomRange: [7200000, null],
+                                  panRange: [instanceId * 1000, endTime * 1000]
+                              },
+                              yaxis: {
+                                  zoomRange: [5 + MaxTemp - MinTemp, 5 + MaxTemp - MinTemp],
+                                  panRange: [MinTemp - 2.5, MaxTemp + 2.5]
                               },
                               series: {
                                   lines: {
@@ -345,6 +375,15 @@
                                   points: {
                                       show: false
                                   }
+                              },
+                              zoom: {
+                                  interactive: true
+                              },
+                              pan: {
+                                  interactive: true
+                              },
+                              grid: {
+                                  hoverable: true
                               }
                           };
 
@@ -363,6 +402,31 @@
                           }];
 
                           var plot = $.plot(chartPanel, data, options);
+
+                          $("<div id='tooltip'></div>").css({
+                              position: "absolute",
+                              display: "none",
+                              border: "1px solid #fdd",
+                              padding: "2px",
+                              "background-color": "#fee",
+                              opacity: 0.80
+                          }).appendTo("body");
+
+                          chartPanel.bind("plothover", function (event, pos, item) {
+                              if (item) {
+                                  var x = item.datapoint[0].toFixed(2),
+                                      y = item.datapoint[1].toFixed(2);
+
+                                  var sampleTime = new Date(item.datapoint[0]);
+                                  var sampleTimeString = sampleTime.toLocaleString();
+
+                                  $("#tooltip").html(item.series.label + "<br>" + sampleTimeString + "<br>" + y + "&deg;F")
+                                      .css({ top: item.pageY + 5, left: item.pageX + 15 })
+                                      .fadeIn(200);
+                              } else {
+                                  $("#tooltip").hide();
+                              }
+                          });
                       });
                 }
             });

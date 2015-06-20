@@ -227,7 +227,7 @@ var temperatureProfileAPI = (function (promiseAPI, baseAPIAddress, utils) {
         var probe1Temp_C;
         var Packed;
 
-        for (var i = 0; i < response.byteLength / 7; i++) {
+        for (var i = 0; i < response.byteLength / 4; i++) {
             var record = {};
             Packed = dv.getUint32(aryOffset, true);
             aryOffset += 4;
