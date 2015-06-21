@@ -242,17 +242,17 @@ var temperatureProfileAPI = (function (promiseAPI, baseAPIAddress, utils) {
                 Packed >>= 10;
                 var p0_temp = Packed & 1023;
 
-                probe0Temp_C = (p0_temp * 0.146628) - 25;
-                probe1Temp_C = (p1_temp * 0.146628) - 25;
+                ProcessTemp_C = (p0_temp * 0.146628) - 25;
+                TargetTemp_C = (p1_temp * 0.146628) - 25;
                 OutputPercent -= 100;
 
-                record.probe0Temp = Math.round(utils.celciusToFahrenheit(probe0Temp_C) * 100) / 100;
-                record.probe1Temp = Math.round(utils.celciusToFahrenheit(probe1Temp_C) * 100) / 100;
+                record.ProcessTemp_C = Math.round(utils.celciusToFahrenheit(ProcessTemp_C) * 100) / 100;
+                record.TargetTemp_C = Math.round(utils.celciusToFahrenheit(TargetTemp_C) * 100) / 100;
                 record.outputPercent = OutputPercent;
                 record.RelayStatus = RelayStatus;
             } else {
-                record.probe0Temp = 0;
-                record.probe1Temp = 0;
+                record.ProcessTemp_C = 0;
+                record.TargetTemp_C = 0;
                 record.outputPercent = 0;
                 record.RelayStatus = 0;
             }          

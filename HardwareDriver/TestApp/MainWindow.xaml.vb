@@ -363,7 +363,7 @@ Class MainWindow
                 fod.ShowDialog()
                 Dim idx As Integer = 0
                 Using sw = New StreamWriter(fod.OpenFile())
-                    sw.WriteLine("Idx, Probe0, Probe1, Output, Relay")
+                    sw.WriteLine("Idx, Process, Target, Output, Relay")
                     For Each itm In ret
                         sw.WriteLine(idx & "," & itm.ToString)
                         idx += 1

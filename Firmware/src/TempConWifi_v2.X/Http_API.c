@@ -15,8 +15,6 @@
 #include "FlashFS.h"
 #include "fletcherChecksum.h"
 
-//char msg[512];
-
 void uploadRawDiskData(HTTP_REQUEST *req, const char *urlParameter, unsigned long baseAddress, unsigned long maxLength) {
     char temp[32];
     unsigned long offset;
@@ -1190,120 +1188,6 @@ void PUT_UploadBlob(HTTP_REQUEST *req, const char *urlParameter) {
 void PUT_EraseBlob(HTTP_REQUEST *req, const char *urlParameter) {
     deleteRawDiskData(req, urlParameter, BLOB_START_ADDRESS, BLOB_LENGTH);
 }
-
-//void PUT_uploadFile(HTTP_REQUEST *req, const char *urlParameter) {
-//    char temp[32];
-//    char fname[64];
-//    unsigned long offset;
-//    char *b64_Content;
-//    BYTE *ContentData;
-//    int ContentLength;
-//    int b64_ContentLength;
-//    unsigned int chkSum;
-//    ff_File handle;
-//    int ret;
-//
-//    if (url_queryParse2(urlParameter, "fname", fname, 63) == 0) {
-//        Send500_InternalServerError(req, "parameter 'fname' is required");
-//        return;
-//    }
-//
-//    if (url_queryParse2(urlParameter, "offset", temp, 12)) {
-//        if (sscanf(temp, "%lu", &offset) != 1) {
-//            sprintf(msg, "Error Offset was invalid: offset=\"%s\"", temp);
-//            Send500_InternalServerError(req, msg);
-//            return;
-//        }
-//        if (offset == 0) {
-//            ff_Delete(fname);
-//            ret = ff_OpenByFileName(&handle, fname, 1);
-//            if (ret != FR_OK) {
-//                sprintf(msg, "Error: Unable to open/create file: res='%s'", Translate_DRESULT(ret));
-//                Send500_InternalServerError(req, msg);
-//                return;
-//            }
-//        }
-//    } else {
-//        Send500_InternalServerError(req, "parameter 'offset' is required");
-//        return;
-//    }
-//
-//    if (url_queryParse2(urlParameter, "chksum", temp, 6)) {
-//        if (sscanf(temp, "%u", &chkSum) != 1) {
-//            sprintf(msg, "Error chksum could not parse: chksum=\"%s\"", temp);
-//            Send500_InternalServerError(req, msg);
-//            return;
-//        }
-//    } else {
-//        Send500_InternalServerError(req, "Query Parameter 'chksum' was not provided.");
-//        return;
-//    }
-//
-//    if (url_queryParse(urlParameter, "content", &b64_Content, &b64_ContentLength) == 0) {
-//        Send500_InternalServerError(req, "Parameter 'content' is required");
-//        return;
-//    }
-//
-//    if (b64_ContentLength == 0) b64_ContentLength = strlen(b64_Content);
-//
-//    ContentData = (BYTE *) b64_Content;
-//    ContentLength = decode_Base64(b64_Content, b64_ContentLength, ContentData);
-//    if (ContentLength < 0) {
-//        Send500_InternalServerError(req, "Unable to decode base64 Content...");
-//        return;
-//    }
-//
-//    unsigned int calcChkSum = fletcher16(ContentData, ContentLength);
-//    if (calcChkSum != chkSum) {
-//        sprintf(msg, "Checksums Do NOT match: Actual=%u Expected=%u", calcChkSum, chkSum);
-//        Send500_InternalServerError(req, msg);
-//        return;
-//    }
-//
-//    ret = ff_Seek(&handle, offset);
-//    if (ret != FR_OK) {
-//        sprintf(msg, "Error: Unable to seek file: res='%s'", Translate_DRESULT(ret));
-//        Send500_InternalServerError(req, msg);
-//        return;
-//    }
-//
-//    int bWritten;
-//    ret = ff_Append(&handle, ContentData, ContentLength, &bWritten);
-//    if (ret != FR_OK) {
-//        sprintf(msg, "Error: Unable to append file: res='%s'", Translate_DRESULT(ret));
-//        Send500_InternalServerError(req, msg);
-//        return;
-//    }
-//
-//    if (url_queryParse2(urlParameter, "finalize", temp, 2)) {
-//        if (temp[0] == 'y') {
-//            ret = ff_UpdateLength(&handle);
-//            if (ret != FR_OK) {
-//                sprintf(msg, "Error: Unable to finalize file: res='%s'", Translate_DRESULT(ret));
-//                Send500_InternalServerError(req, msg);
-//
-//                return;
-//            }
-//        }
-//    }
-//
-//    Log("UploadFile: '%s' Offset=%ul finalize='%s'...OK\r\n", fname, offset, temp);
-//    Send200_OK_Simple(req);
-//}
-//
-//void PUT_deleteFile(HTTP_REQUEST *req, const char *urlParameter) {
-//    char fname[64];
-//
-//    if (url_queryParse2(urlParameter, "fname", fname, 63) == 0) {
-//        Send500_InternalServerError(req, "parameter 'fname' is required");
-//
-//        return;
-//    }
-//
-//    ff_Delete(fname);
-//    Log("DeleteFile: '%s' OK\r\n", fname);
-//    Send200_OK_Simple(req);
-//}
 
 void GET_FlashStats(HTTP_REQUEST *req, const char *urlParameter) {
     char msg[256];

@@ -45,18 +45,18 @@
 
                 <li class="flex1">
                     <div class="panel panel-default">
-                        <div class="panel-heading  text-center">Left Probe</div>
+                        <div class="panel-heading  text-center">Target Probe</div>
                         <div class="panel-body text-center">
-                            <h3 id="probe0Temp"></h3>
+                            <h3 id="TargetTemp"></h3>
                         </div>
                     </div>
                 </li>
 
                 <li class="flex1">
                     <div class="panel panel-default">
-                        <div class="panel-heading  text-center">Right Probe</div>
+                        <div class="panel-heading  text-center">Process Probe</div>
                         <div class="panel-body text-center">
-                            <h3 id="probe1Temp"></h3>
+                            <h3 id="ProcessTemp"></h3>
                         </div>
                     </div>
                 </li>
@@ -139,11 +139,11 @@
                   document.getElementById("systemTime").innerText =
                     status.systemTime.toLocaleDateString() + ' ' + status.systemTime.toLocaleTimeString();
 
-                  document.getElementById("probe0Temp").innerText =
-                    Math.round(utils.celciusToFahrenheit(status.probe0Temp) * 100) / 100 + ' \xB0F';
+                  document.getElementById("ProcessTemp").innerText =
+                    Math.round(utils.celciusToFahrenheit(status.ProcessTemp) * 100) / 100 + ' \xB0F';
 
-                  document.getElementById("probe1Temp").innerText =
-                    Math.round(utils.celciusToFahrenheit(status.probe1Temp) * 100) / 100 + ' \xB0F';
+                  document.getElementById("TargetTemp").innerText =
+                    Math.round(utils.celciusToFahrenheit(status.TargetTemp) * 100) / 100 + ' \xB0F';
 
                   document.getElementById("heatRelayStatus").innerText =
                     status.heatRelayOn ? "On" : "Off";

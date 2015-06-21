@@ -25,13 +25,13 @@ var statusAPI = (function(promiseAPI, baseAPIAddress, utils) {
     status.probe0Assign = dv.getInt8(aryOffset, true);
     aryOffset += 1;
 
-    status.probe0Temp = dv.getFloat32(aryOffset, true);
+    status.TargetTemp = dv.getFloat32(aryOffset, true);
     aryOffset += 4;
 
     status.probe1Assign = dv.getInt8(aryOffset, true);
     aryOffset += 1;
 
-    status.probe1Temp = dv.getFloat32(aryOffset, true);
+    status.ProcessTemp = dv.getFloat32(aryOffset, true);
     aryOffset += 4;
 
     status.heatRelayOn = dv.getInt8(aryOffset, true);

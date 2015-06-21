@@ -319,21 +319,21 @@
                         })
                       .subscribe(function (instanceData) {
 
-                          var probe0Data = [];
-                          var probe1Data = [];
+                          var TargetTempData = [];
+                          var ProcessTempData = [];
                           var setpointData = [];
                           for (var j = 0; j < instanceData.trendData.length; j += 1) {
                               var timeStamp = (instanceId + (instanceData.trendData[j].SampleIdx * 60)) * 1000;
-                              if (instanceData.trendData[j].probe0Temp > 0) {
-                                  probe0Data.push([timeStamp, instanceData.trendData[j].probe0Temp]);
-                                  if (instanceData.trendData[j].probe0Temp > MaxTemp) MaxTemp = instanceData.trendData[j].probe0Temp;
-                                  if (instanceData.trendData[j].probe0Temp < MinTemp) MinTemp = instanceData.trendData[j].probe0Temp;
+                              if (instanceData.trendData[j].TargetTemp_C > 0) {
+                                  TargetTempData.push([timeStamp, instanceData.trendData[j].TargetTemp_C]);
+                                  if (instanceData.trendData[j].TargetTemp_C > MaxTemp) MaxTemp = instanceData.trendData[j].TargetTemp_C;
+                                  if (instanceData.trendData[j].TargetTemp_C < MinTemp) MinTemp = instanceData.trendData[j].TargetTemp_C;
 
                               }
-                              if (instanceData.trendData[j].probe1Temp > 0) {
-                                  probe1Data.push([timeStamp, instanceData.trendData[j].probe1Temp]);
-                                  if (instanceData.trendData[j].probe1Temp > MaxTemp) MaxTemp = instanceData.trendData[j].probe1Temp;
-                                  if (instanceData.trendData[j].probe1Temp < MinTemp) MinTemp = instanceData.trendData[j].probe1Temp;
+                              if (instanceData.trendData[j].ProcessTemp_C > 0) {
+                                  ProcessTempData.push([timeStamp, instanceData.trendData[j].ProcessTemp_C]);
+                                  if (instanceData.trendData[j].ProcessTemp_C > MaxTemp) MaxTemp = instanceData.trendData[j].ProcessTemp_C;
+                                  if (instanceData.trendData[j].ProcessTemp_C < MinTemp) MinTemp = instanceData.trendData[j].ProcessTemp_C;
                               }
                           }
 
@@ -394,11 +394,11 @@
                                   show: true
                               }
                           }, {
-                              label: "Probe 0",
-                              data: probe0Data
+                              label: "Process",
+                              data: ProcessTempData
                           }, {
-                              label: "Probe 1",
-                              data: probe1Data
+                              label: "Target",
+                              data: TargetTempData
                           }];
 
                           var plot = $.plot(chartPanel, data, options);
